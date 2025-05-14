@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-inter: "Inter", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #111111;
+  color: #f3f4f6;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  background-image: radial-gradient(circle at 50% 50%, rgba(20, 241, 149, 0.03) 0%, transparent 25%),
+    radial-gradient(circle at 80% 20%, rgba(153, 69, 255, 0.03) 0%, transparent 35%);
+}
+
+@layer components {
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white font-medium py-3 px-6 rounded-md hover:bg-primary-hover transition-all duration-300;
+  }
+
+  .nav-link {
+    @apply text-text-primary hover:text-primary transition-colors duration-200;
+  }
+
+  .feature-card {
+    @apply bg-background-secondary rounded-xl p-6 border border-gray-800 hover:border-solana-purple/50 transition-all duration-300;
+  }
+}
+
+/* Gradient text animation */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.bg-gradient-to-r {
+  background-size: 200% auto;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* Particle animation */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.particle-blue {
+  background-color: rgba(0, 191, 255, 0.5);
+  box-shadow: 0 0 10px 2px rgba(0, 191, 255, 0.2);
+}
+
+.particle-green {
+  background-color: rgba(20, 241, 149, 0.5);
+  box-shadow: 0 0 10px 2px rgba(20, 241, 149, 0.2);
+}
+
+.particle-purple {
+  background-color: rgba(153, 69, 255, 0.5);
+  box-shadow: 0 0 10px 2px rgba(153, 69, 255, 0.2);
+}
+
+/* Add offset for scroll behavior to account for fixed header */
+html {
+  scroll-padding-top: 80px; /* Adjust based on your header height */
+}
