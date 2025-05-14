@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { Zap, Globe } from "lucide-react"
+import { usePathname } from "next/navigation"
 
 // Define gateway nodes with city names and coordinates
 const gatewayNodes = [
@@ -29,6 +30,46 @@ export default function BDNNetworkSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [hoveredNode, setHoveredNode] = useState<number | null>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const pathname = usePathname()
+  const isGerman = pathname.startsWith("/de")
+
+  // Übersetzte Texte
+  const texts = {
+    title: isGerman
+      ? "Überhole den Markt: Same-Block-Ausführung über unser exklusives BDN-Netzwerk."
+      : "Outpace the Market: Same-Block Execution via Our Exclusive BDN Network.",
+    sameBlock: {
+      title: isGerman ? "Same-Block-Ausführung: Maximale Wirkung." : "Same-Block Execution: Maximum Impact.",
+      description: isGerman
+        ? `Rust Rocket zielt darauf ab, deine Sniper- und Copy-Trades im exakt gleichen Solana-Block wie das Originalereignis auszuführen. Kein Warten, keine Verzögerungen, maximale Trefferquote.`
+        : `Rust Rocket aims to execute your sniper and copy trades in the exact same Solana block as the original event. No waiting, no delays, maximum hit rate.`,
+    },
+    gateways: {
+      title: isGerman
+        ? "15 proprietäre BDN-Gateways: Dein globaler Geschwindigkeitsvorteil."
+        : "15 Proprietary BDN Gateways: Your Global Speed Advantage.",
+      description: isGerman
+        ? "Unser globales Netzwerk aus 15 privaten, optimierten Solana-Gateways (Block Dependent Network) stellt sicher, dass deine Transaktionen über die schnellsten, zuverlässigsten Wege geleitet werden und öffentliche Überlastungen umgehen. Dies ist der technologische Vorsprung, der für erfolgreiches Sniping auf pump.fun und darüber hinaus unerlässlich ist."
+        : "Our global network of 15 private, optimized Solana gateways (Block Dependent Network) ensures your transactions are routed via the fastest, most reliable paths, bypassing public congestion. This is the technological edge essential for successful sniping on pump.fun and beyond.",
+    },
+    map: {
+      title: isGerman ? "Globales BDN-Netzwerk" : "Global BDN Network",
+      centralNode: isGerman ? "Zentraler Knoten" : "Central Node",
+      primaryGateway: isGerman ? "Primäres Gateway" : "Primary Gateway",
+      secondaryGateway: isGerman ? "Sekundäres Gateway" : "Secondary Gateway",
+      hover: isGerman
+        ? "Bewege den Mauszeiger über Knoten, um Standorte zu sehen"
+        : "Hover over nodes to see locations",
+      standard: {
+        title: isGerman ? "Standard-Transaktionspfad" : "Standard Transaction Path",
+        attributes: isGerman ? "Langsam • Mehrere Hops • Überlastet" : "Slow • Multiple hops • Congested",
+      },
+      rocketPath: {
+        title: isGerman ? "Rust Rocket BDN-Pfad" : "Rust Rocket BDN Path",
+        attributes: isGerman ? "Direkt • Schnell • Optimiert" : "Direct • Fast • Optimized",
+      },
+    },
+  }
 
   // Animation for the BDN network map
   useEffect(() => {
@@ -282,10 +323,7 @@ export default function BDNNetworkSection() {
     <section className="py-20 relative overflow-hidden" id="bdn-network">
       <div className="container-custom">
         <div className="text-center max-w-4xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-6">
-            Outpace the Market: Same-Block Execution via Our Exclusive <span className="text-primary">BDN Network</span>
-            .
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-6">{texts.title}</h2>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
@@ -295,13 +333,9 @@ export default function BDNNetworkSection() {
               <div className="p-3 rounded-lg bg-primary/10 text-primary">
                 <Zap className="h-6 w-6" />
               </div>
-              <h3 className="text-2xl font-bold text-text-primary">Same-Block Execution: Maximum Impact.</h3>
+              <h3 className="text-2xl font-bold text-text-primary">{texts.sameBlock.title}</h3>
             </div>
-            <p className="text-text-secondary text-lg">
-              Rust Rocket aims to execute your sniper and copy trades in the{" "}
-              <span className="text-primary font-semibold">exact same Solana block</span> as the original event. No
-              waiting, no delays, maximum hit rate.
-            </p>
+            <p className="text-text-secondary text-lg">{texts.sameBlock.description}</p>
           </div>
 
           {/* 15 Global BDN Gateways */}
@@ -310,15 +344,9 @@ export default function BDNNetworkSection() {
               <div className="p-3 rounded-lg bg-solana-green/10 text-solana-green">
                 <Globe className="h-6 w-6" />
               </div>
-              <h3 className="text-2xl font-bold text-text-primary">
-                15 Proprietary BDN Gateways: Your Global Speed Advantage.
-              </h3>
+              <h3 className="text-2xl font-bold text-text-primary">{texts.gateways.title}</h3>
             </div>
-            <p className="text-text-secondary text-lg">
-              Our global network of 15 private, optimized Solana gateways (Block Dependent Network) ensures your
-              transactions are routed via the fastest, most reliable paths, bypassing public congestion. This is the
-              technological edge essential for successful sniping on pump.fun and beyond.
-            </p>
+            <p className="text-text-secondary text-lg">{texts.gateways.description}</p>
           </div>
         </div>
 
@@ -332,46 +360,36 @@ export default function BDNNetworkSection() {
 
           {/* Map legend */}
           <div className="absolute top-4 left-4 bg-background/80 backdrop-blur-sm rounded-lg p-3 border border-gray-800">
-            <h4 className="text-text-primary text-sm font-medium mb-2">Global BDN Network</h4>
+            <h4 className="text-text-primary text-sm font-medium mb-2">{texts.map.title}</h4>
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-primary"></div>
-                <span className="text-text-secondary text-xs">Central Node</span>
+                <span className="text-text-secondary text-xs">{texts.map.centralNode}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-solana-purple"></div>
-                <span className="text-text-secondary text-xs">Primary Gateway</span>
+                <span className="text-text-secondary text-xs">{texts.map.primaryGateway}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-solana-green"></div>
-                <span className="text-text-secondary text-xs">Secondary Gateway</span>
+                <span className="text-text-secondary text-xs">{texts.map.secondaryGateway}</span>
               </div>
             </div>
-            <div className="mt-2 text-text-secondary text-xs">Hover over nodes to see locations</div>
+            <div className="mt-2 text-text-secondary text-xs">{texts.map.hover}</div>
           </div>
 
           {/* Comparison overlay */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/90 to-transparent p-6">
             <div className="grid grid-cols-2 gap-6 max-w-3xl mx-auto">
               <div className="bg-background/60 backdrop-blur-sm rounded-lg p-4 border border-gray-800">
-                <h4 className="text-text-secondary font-medium mb-2 text-sm">Standard Transaction Path</h4>
-                <div className="flex items-center gap-2 text-red-400 text-sm">
-                  <span>Slow</span>
-                  <span>•</span>
-                  <span>Multiple hops</span>
-                  <span>•</span>
-                  <span>Congested</span>
-                </div>
+                <h4 className="text-text-secondary font-medium mb-2 text-sm">{texts.map.standard.title}</h4>
+                <div className="flex items-center gap-2 text-red-400 text-sm">{texts.map.standard.attributes}</div>
               </div>
 
               <div className="bg-background/60 backdrop-blur-sm rounded-lg p-4 border border-solana-green/30">
-                <h4 className="text-text-secondary font-medium mb-2 text-sm">Rust Rocket BDN Path</h4>
+                <h4 className="text-text-secondary font-medium mb-2 text-sm">{texts.map.rocketPath.title}</h4>
                 <div className="flex items-center gap-2 text-solana-green text-sm">
-                  <span>Direct</span>
-                  <span>•</span>
-                  <span>Fast</span>
-                  <span>•</span>
-                  <span>Optimized</span>
+                  {texts.map.rocketPath.attributes}
                 </div>
               </div>
             </div>
