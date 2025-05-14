@@ -4,13 +4,15 @@ import type React from "react"
 import { useState, useCallback, useRef, useEffect } from "react"
 import { Bot, X, Send } from "lucide-react"
 import { chatWithGrokAI, type Message } from "@/app/actions/grok-ai"
+import { useTranslations, useLocale } from "next-intl"
 
 export default function ChatBubble() {
+  const t = useTranslations("chat")
+  const locale = useLocale()
+
   const [isHovered, setIsHovered] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "Hi there! I'm Grok AI powered by xAI. How can I help you with Rust Rocket today?" },
-  ])
+  const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: t("welcome") }])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
@@ -79,7 +81,7 @@ export default function ChatBubble() {
           <div className="flex items-center justify-between p-4 border-b border-gray-800">
             <div className="flex items-center gap-2">
               <Bot className="h-5 w-5 text-solana-purple" />
-              <span className="font-medium text-text-primary">Grok AI Assistant</span>
+              <span className="font-medium text-text-primary">{t("title")}</span>
             </div>
             <button
               onClick={toggleChat}
@@ -127,7 +129,7 @@ export default function ChatBubble() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about Rust Rocket..."
+                placeholder={t("placeholder")}
                 className="flex-1 bg-background border border-gray-800 rounded-md px-3 py-2 text-text-primary focus:outline-none focus:ring-1 focus:ring-solana-purple"
                 disabled={isLoading}
               />
@@ -135,7 +137,7 @@ export default function ChatBubble() {
                 type="submit"
                 disabled={isLoading || !input.trim()}
                 className="bg-solana-purple/20 hover:bg-solana-purple/30 text-solana-purple px-3 py-2 rounded-md transition-colors disabled:opacity-50 flex items-center justify-center"
-                aria-label="Send message"
+                aria-label={t("send")}
               >
                 <Send className="h-4 w-4" />
               </button>
@@ -146,7 +148,7 @@ export default function ChatBubble() {
         <div className="relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
           <button
             className="flex items-center justify-center w-14 h-14 rounded-full bg-background-secondary border border-gray-800 shadow-lg hover:border-solana-purple/50 transition-all duration-300 hover:scale-105 group"
-            aria-label="Chat with Grok AI"
+            aria-label={t("title")}
             onClick={toggleChat}
           >
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 via-solana-purple/20 to-solana-green/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -159,7 +161,7 @@ export default function ChatBubble() {
               isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
             }`}
           >
-            <div className="text-sm font-medium">Chat with Grok AI</div>
+            <div className="text-sm font-medium">{t("title")}</div>
             <div className="absolute bottom-0 right-5 transform translate-y-1/2 rotate-45 w-2 h-2 bg-background-secondary border-r border-b border-gray-800"></div>
           </div>
 

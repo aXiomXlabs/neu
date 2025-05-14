@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title: "Rust Rocket | The Leading Telegram Trading and Sniping Bot",
   description:
     "Discover Rust Rocket, the top Telegram trading bot revolutionizing DeFi on Ethereum, Solana, and other chains.",
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({

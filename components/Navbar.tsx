@@ -3,25 +3,42 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Menu, X, Globe } from "lucide-react"
-
-const navLinks = [
-  { name: "Features", href: "#features" },
-  { name: "Copy Trading", href: "#copy-trading" },
-  { name: "Network", href: "#bdn-network" },
-  { name: "Dashboard", href: "#dashboard-preview" },
-  { name: "Waitlist", href: "#waitlist" },
-]
+import { Menu, X } from "lucide-react"
+import LanguageSwitcher from "./LanguageSwitcher"
+import { usePathname } from "next/navigation"
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
+
+  // Einfache Spracherkennung
+  const isGerman = pathname.startsWith("/de")
+
+  // Übersetzte Navigationstexte
+  const navTexts = {
+    features: isGerman ? "Funktionen" : "Features",
+    copyTrading: isGerman ? "Copy-Trading" : "Copy Trading",
+    network: isGerman ? "Netzwerk" : "Network",
+    dashboard: "Dashboard",
+    waitlist: isGerman ? "Warteliste" : "Waitlist",
+    joinWaitlist: isGerman ? "Warteliste beitreten" : "Join Waitlist",
+    join: isGerman ? "Beitreten" : "Join",
+  }
+
+  const navLinks = [
+    { name: navTexts.features, href: "#features" },
+    { name: navTexts.copyTrading, href: "#copy-trading" },
+    { name: navTexts.network, href: "#bdn-network" },
+    { name: navTexts.dashboard, href: "#dashboard-preview" },
+    { name: navTexts.waitlist, href: "#waitlist" },
+  ]
 
   return (
     <header className="bg-[#141414] border-b border-gray-800 sticky top-0 z-50 shadow-md">
       <div className="container-custom flex items-center justify-between py-4">
         {/* Logo */}
         <div className="flex items-center">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={isGerman ? "/de" : "/en"} className="flex items-center gap-2">
             <div className="bg-primary/10 p-2 rounded-md">
               <Image
                 src="/images/rust-rocket-logo.png"
@@ -54,13 +71,10 @@ export default function Navbar() {
             href="#waitlist"
             className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
           >
-            Join Waitlist
+            {navTexts.joinWaitlist}
           </Link>
           <div className="h-6 w-px bg-gray-700"></div>
-          <Link href="#" className="flex items-center space-x-1 nav-link">
-            <Image src="/images/en-flag.png" alt="English" width={20} height={15} className="h-4 w-auto" />
-            <Globe className="h-4 w-4" />
-          </Link>
+          <LanguageSwitcher />
         </div>
 
         {/* Mobile menu button */}
@@ -69,8 +83,9 @@ export default function Navbar() {
             href="#waitlist"
             className="bg-primary hover:bg-primary-hover text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
           >
-            Join Waitlist
+            {navTexts.join}
           </Link>
+          <LanguageSwitcher />
           <button type="button" className="text-text-primary" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             <span className="sr-only">Open main menu</span>
             {mobileMenuOpen ? (
@@ -96,13 +111,6 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <div className="pt-2 border-t border-gray-800 mt-4">
-              <Link href="#" className="flex items-center space-x-2 nav-link py-2">
-                <Image src="/images/en-flag.png" alt="English" width={20} height={15} className="h-4 w-auto" />
-                <span>English</span>
-                <Globe className="h-4 w-4" />
-              </Link>
-            </div>
           </div>
         </div>
       )}
