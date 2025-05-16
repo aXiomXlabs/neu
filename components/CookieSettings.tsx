@@ -4,15 +4,15 @@ import { Settings } from "lucide-react"
 import { useCookieConsent } from "@/lib/cookieConsent"
 
 export default function CookieSettings() {
-  const { showPreferences } = useCookieConsent()
+  const { showSettings } = useCookieConsent()
 
   return (
     <button
-      onClick={showPreferences}
-      className="text-text-secondary hover:text-primary text-sm flex items-center gap-1 transition-colors"
-      aria-label="Manage cookie preferences"
+      onClick={showSettings}
+      className="flex items-center gap-2 text-text-secondary hover:text-text-primary text-sm transition-colors"
+      aria-label="Open cookie settings"
     >
-      <Settings className="w-3 h-3" />
+      <Settings size={14} />
       <span>Cookie Settings</span>
     </button>
   )

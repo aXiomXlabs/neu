@@ -1,150 +1,167 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { event, ANALYTICS_EVENTS } from "@/lib/analytics"
 
-type ConsentType = "analytics" | "marketing" | "necessary"
+// Define the types for cookie consent
+export type ConsentCategories = {
+  necessary: boolean
+  analytics: boolean
+  marketing: boolean
+}
 
-interface CookieConsentContextType {
-  consents: Record<ConsentType, boolean>
-  setConsent: (type: ConsentType, value: boolean) => void
-  hasResponded: boolean
+// Define the context type
+type CookieConsentContextType = {
+  consents: ConsentCategories
+  hasInteracted: boolean
+  updateConsents: (newConsents: Partial<ConsentCategories>) => void
   acceptAll: () => void
   declineAll: () => void
   savePreferences: () => void
-  showPreferences: () => void
-  isPreferencesOpen: boolean
-  closePreferences: () => void
+  showSettings: () => void
+  hideSettings: () => void
+  settingsVisible: boolean
 }
 
-const defaultConsents: Record<ConsentType, boolean> = {
-  necessary: true, // Always required
-  analytics: false,
-  marketing: false,
-}
+// Create the context with default values
+const CookieConsentContext = createContext<CookieConsentContextType>({
+  consents: { necessary: true, analytics: false, marketing: false },
+  hasInteracted: false,
+  updateConsents: () => {},
+  acceptAll: () => {},
+  declineAll: () => {},
+  savePreferences: () => {},
+  showSettings: () => {},
+  hideSettings: () => {},
+  settingsVisible: false,
+})
 
-export const CookieConsentContext = createContext<CookieConsentContextType | undefined>(undefined)
+// Hook to use the cookie consent context
+export const useCookieConsent = () => useContext(CookieConsentContext)
 
-export function useCookieConsent() {
-  const context = useContext(CookieConsentContext)
-  if (context === undefined) {
-    throw new Error("useCookieConsent must be used within a CookieConsentProvider")
-  }
-  return context
-}
+// Provider component
+export function CookieConsentProvider({ children }: { children: ReactNode }) {
+  // Default state: necessary cookies are always accepted
+  const [consents, setConsents] = useState<ConsentCategories>({
+    necessary: true,
+    analytics: false,
+    marketing: false,
+  })
 
-interface CookieConsentProviderProps {
-  children: ReactNode
-}
-
-export function CookieConsentProvider({ children }: CookieConsentProviderProps) {
-  const [consents, setConsents] = useState<Record<ConsentType, boolean>>(defaultConsents)
-  const [hasResponded, setHasResponded] = useState<boolean>(true) // Default to true to prevent flash
-  const [isPreferencesOpen, setIsPreferencesOpen] = useState<boolean>(false)
+  const [hasInteracted, setHasInteracted] = useState(true) // Default to true to hide banner until we check localStorage
+  const [settingsVisible, setSettingsVisible] = useState(false)
 
   // Load saved preferences on mount
   useEffect(() => {
     const savedConsents = localStorage.getItem("cookieConsents")
-    const hasUserResponded = localStorage.getItem("cookieConsentResponse")
-
     if (savedConsents) {
-      setConsents(JSON.parse(savedConsents))
+      try {
+        const parsedConsents = JSON.parse(savedConsents)
+        setConsents(parsedConsents)
+        setHasInteracted(true)
+      } catch (e) {
+        console.error("Error parsing saved cookie consents:", e)
+        setHasInteracted(false)
+      }
+    } else {
+      // No saved preferences, show the banner
+      setHasInteracted(false)
     }
-
-    setHasResponded(hasUserResponded === "true")
   }, [])
 
-  // Set individual consent
-  const setConsent = (type: ConsentType, value: boolean) => {
-    setConsents((prev) => ({
-      ...prev,
-      [type]: value,
-    }))
+  // Update specific consent categories
+  const updateConsents = (newConsents: Partial<ConsentCategories>) => {
+    setConsents((prev) => ({ ...prev, ...newConsents }))
   }
 
   // Accept all cookies
   const acceptAll = () => {
-    const allAccepted = {
+    const allConsents = {
       necessary: true,
       analytics: true,
       marketing: true,
     }
-    setConsents(allAccepted)
-    localStorage.setItem("cookieConsents", JSON.stringify(allAccepted))
-    localStorage.setItem("cookieConsentResponse", "true")
-    setHasResponded(true)
-    setIsPreferencesOpen(false)
+    setConsents(allConsents)
+    setHasInteracted(true)
+    localStorage.setItem("cookieConsents", JSON.stringify(allConsents))
 
-    // Reload the page to apply analytics scripts
+    // Track event
+    event(ANALYTICS_EVENTS.COOKIE_CONSENT_ACCEPTED, {
+      event_category: "consent",
+      event_label: "all",
+    })
+
+    // Reload the page to activate analytics scripts
     window.location.reload()
   }
 
   // Decline all optional cookies
   const declineAll = () => {
-    const allDeclined = {
-      necessary: true, // Always required
+    const minimalConsents = {
+      necessary: true,
       analytics: false,
       marketing: false,
     }
-    setConsents(allDeclined)
-    localStorage.setItem("cookieConsents", JSON.stringify(allDeclined))
-    localStorage.setItem("cookieConsentResponse", "true")
-    setHasResponded(true)
-    setIsPreferencesOpen(false)
+    setConsents(minimalConsents)
+    setHasInteracted(true)
+    localStorage.setItem("cookieConsents", JSON.stringify(minimalConsents))
+
+    // Track event
+    event(ANALYTICS_EVENTS.COOKIE_CONSENT_DECLINED, {
+      event_category: "consent",
+      event_label: "all",
+    })
   }
 
   // Save current preferences
   const savePreferences = () => {
     localStorage.setItem("cookieConsents", JSON.stringify(consents))
-    localStorage.setItem("cookieConsentResponse", "true")
-    setHasResponded(true)
-    setIsPreferencesOpen(false)
+    setHasInteracted(true)
+    setSettingsVisible(false)
 
-    // Reload the page to apply analytics scripts if analytics was enabled
-    if (consents.analytics) {
-      window.location.reload()
-    }
+    // Track event
+    event(ANALYTICS_EVENTS.COOKIE_SETTINGS_SAVE, {
+      event_category: "consent",
+      event_label: "custom",
+      analytics: consents.analytics,
+      marketing: consents.marketing,
+    })
+
+    // Reload the page to activate/deactivate analytics scripts
+    window.location.reload()
   }
 
-  // Show preferences modal
-  const showPreferences = () => {
-    setIsPreferencesOpen(true)
+  // Show cookie settings
+  const showSettings = () => {
+    setSettingsVisible(true)
+
+    // Track event
+    event(ANALYTICS_EVENTS.COOKIE_SETTINGS_OPEN, {
+      event_category: "consent",
+      event_label: "settings_open",
+    })
   }
 
-  // Close preferences modal
-  const closePreferences = () => {
-    setIsPreferencesOpen(false)
+  // Hide cookie settings
+  const hideSettings = () => {
+    setSettingsVisible(false)
   }
 
   return (
     <CookieConsentContext.Provider
       value={{
         consents,
-        setConsent,
-        hasResponded,
+        hasInteracted,
+        updateConsents,
         acceptAll,
         declineAll,
         savePreferences,
-        showPreferences,
-        isPreferencesOpen,
-        closePreferences,
+        showSettings,
+        hideSettings,
+        settingsVisible,
       }}
     >
       {children}
     </CookieConsentContext.Provider>
   )
-}
-
-// Helper function to check if analytics is allowed
-export function isAnalyticsAllowed(): boolean {
-  if (typeof window === "undefined") return false
-
-  const savedConsents = localStorage.getItem("cookieConsents")
-  if (!savedConsents) return false
-
-  try {
-    const consents = JSON.parse(savedConsents)
-    return consents.analytics === true
-  } catch (e) {
-    return false
-  }
 }

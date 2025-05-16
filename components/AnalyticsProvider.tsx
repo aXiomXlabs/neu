@@ -2,25 +2,25 @@
 
 import type React from "react"
 
-import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
-import { pageview } from "@/lib/analytics"
+import { usePathname, useSearchParams } from "next/navigation"
+import { pageView } from "@/lib/analytics"
 
-export default function AnalyticsProvider({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
+  // Track page views
   useEffect(() => {
     if (pathname) {
-      // Create URL from pathname and search params
-      const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+      // Construct the full URL including search parameters
+      let url = pathname
+      if (searchParams?.toString()) {
+        url += `?${searchParams.toString()}`
+      }
 
-      // Track page view
-      pageview(url)
+      // Send pageview event to Google Analytics
+      pageView(url)
     }
   }, [pathname, searchParams])
 

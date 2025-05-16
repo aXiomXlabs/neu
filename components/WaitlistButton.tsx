@@ -1,63 +1,33 @@
 "use client"
 
-import type { ReactNode } from "react"
-import { useWaitlistModal } from "./WaitlistModalProvider"
+import type React from "react"
 
-interface WaitlistButtonProps {
-  children?: ReactNode
-  className?: string
-  id?: string
-  "data-tracking-id"?: string
+import { useWaitlistModal } from "./WaitlistModalProvider"
+import { event, ANALYTICS_EVENTS } from "@/lib/analytics"
+
+interface WaitlistButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children?: React.ReactNode
 }
 
-export default function WaitlistButton({
-  children = "Join Waitlist",
-  className = "bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md",
-  id,
-  "data-tracking-id": trackingId,
-  ...props
-}: WaitlistButtonProps) {
+export default function WaitlistButton({ children, ...props }: WaitlistButtonProps) {
   const { openModal } = useWaitlistModal()
 
-  const handleClick = () => {
-    // Debugging log
-    console.log("Waitlist button clicked - opening modal")
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
 
     // Track button click
-    if (typeof window !== "undefined" && "gtag" in window && trackingId) {
-      // @ts-ignore - gtag is not typed
-      window.gtag("event", "waitlist_button_click", {
-        event_category: "engagement",
-        event_label: trackingId,
-      })
-    }
+    event(ANALYTICS_EVENTS.WAITLIST_BUTTON_CLICK, {
+      event_category: "engagement",
+      event_label: props.id || "unknown_button",
+    })
 
+    // Open the modal
     openModal()
   }
 
-  // Skip rendering the button if it's the hero button
-  if (id === "hero-waitlist-button") {
-    return null
-  }
-
   return (
-    <div
-      onClick={handleClick}
-      className={`open-waitlist-modal ${className} cursor-pointer`}
-      id={id}
-      data-tracking-id={trackingId}
-      role="button"
-      aria-haspopup="dialog"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault()
-          handleClick()
-        }
-      }}
-      {...props}
-    >
-      {children}
-    </div>
+    <button type="button" onClick={handleClick} {...props}>
+      {children || "Join Waitlist"}
+    </button>
   )
 }
