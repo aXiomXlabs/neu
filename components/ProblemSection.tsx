@@ -120,35 +120,6 @@ export default function ProblemSection() {
             index={3}
           />
         </div>
-
-        {/* Stats section */}
-        <CollapsibleSection
-          title={<h3 className="text-xl font-bold text-center text-text-primary">Key Statistics</h3>}
-          titleClassName="hover:opacity-90 transition-opacity duration-300"
-          defaultOpen={false}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="mt-6 grid md:grid-cols-3 gap-6"
-          >
-            <div className="glass-card p-6 text-center">
-              <div className="text-4xl font-bold text-primary mb-2">94%</div>
-              <p className="text-text-secondary">of traders miss the initial price surge</p>
-            </div>
-
-            <div className="glass-card p-6 text-center">
-              <div className="text-4xl font-bold text-solana-purple mb-2">1.2s</div>
-              <p className="text-text-secondary">average reaction time to new listings</p>
-            </div>
-
-            <div className="glass-card p-6 text-center">
-              <div className="text-4xl font-bold text-solana-green mb-2">10x</div>
-              <p className="text-text-secondary">potential gains lost to slow execution</p>
-            </div>
-          </motion.div>
-        </CollapsibleSection>
       </div>
     </section>
   )

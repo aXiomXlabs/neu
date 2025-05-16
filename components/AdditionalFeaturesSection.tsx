@@ -14,9 +14,67 @@ interface FeatureProps {
   index: number
 }
 
-function FeatureCard({ icon, title, description, accentColor, index }: FeatureProps) {
+interface FeatureCardProps {
+  icon: React.ReactNode
+  title: string
+  description: string
+  accentColor: string
+  index: number
+}
+
+interface CollapsibleSectionProps {
+  title: React.ReactNode
+  children: React.ReactNode
+  titleClassName?: string
+  defaultOpen?: boolean
+}
+
+function CollapsibleSection({ title, children, titleClassName = "", defaultOpen = true }: CollapsibleSectionProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen)
+
+  return (
+    <div className="collapsible-section">
+      <button
+        className={`w-full flex items-center justify-between p-4 ${titleClassName} text-left`}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+      >
+        {title}
+        <motion.svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="transition-transform duration-300"
+          style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+        >
+          <path
+            d="M7 14.5L12 9.5L17 14.5"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </motion.svg>
+      </button>
+      <motion.div
+        className="collapsible-content overflow-hidden"
+        style={{ height: "auto" }}
+        initial={{ height: isOpen ? "auto" : 0 }}
+        animate={{ height: isOpen ? "auto" : 0 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  )
+}
+
+function FeatureCard({ icon, title, description, accentColor, index }: FeatureCardProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, amount: 0.3 })
+  const [isHovered, setIsHovered] = useState(false)
 
   return (
     <motion.div
@@ -25,14 +83,77 @@ function FeatureCard({ icon, title, description, accentColor, index }: FeaturePr
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="glass-card p-6 hover:translate-y-[-2px] transition-all duration-300 group h-full"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`p-3 rounded-lg ${accentColor} mb-4 group-hover:scale-110 transition-transform duration-300`}>
-        {icon}
-      </div>
-      <h4 className="text-xl font-bold mb-3 text-text-primary group-hover:text-primary transition-colors duration-300">
-        {title}
-      </h4>
-      <p className="text-text-secondary group-hover:text-text-primary transition-colors duration-300">{description}</p>
+      <CollapsibleSection
+        title={
+          <div className="flex items-center gap-4">
+            <motion.div
+              className={`p-3 rounded-lg ${accentColor} flex items-center justify-center`}
+              animate={{
+                scale: isHovered ? 1.1 : 1,
+                rotate: isHovered ? 5 : 0,
+              }}
+              transition={{ duration: 0.3 }}
+            >
+              {icon}
+            </motion.div>
+            <h3 className="text-xl font-bold text-text-primary group-hover:text-primary transition-colors duration-300">
+              {title}
+            </h3>
+          </div>
+        }
+        titleClassName="hover:bg-background-tertiary/30 rounded-lg transition-all duration-300"
+        defaultOpen={false}
+      >
+        <div className="mt-4 ml-14">
+          <p className="text-text-secondary group-hover:text-text-primary transition-colors duration-300 mb-4">
+            {description}
+          </p>
+
+          {/* Interaktive Elemente im ausgeklappten Zustand */}
+          <div className="flex flex-wrap gap-3 mt-4">
+            <motion.button
+              className="px-3 py-1 bg-background-tertiary hover:bg-background-secondary text-text-primary rounded-md text-sm flex items-center gap-2 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z" fill="currentColor" />
+              </svg>
+              <span>Mehr erfahren</span>
+            </motion.button>
+
+            <motion.button
+              className="px-3 py-1 bg-primary/10 hover:bg-primary/20 text-primary rounded-md text-sm flex items-center gap-2 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="currentColor" />
+              </svg>
+              <span>Ausprobieren</span>
+            </motion.button>
+          </div>
+
+          {/* Interaktiver Fortschrittsbalken */}
+          <div className="mt-6">
+            <div className="flex justify-between text-xs text-text-secondary mb-1">
+              <span>Entwicklungsfortschritt</span>
+              <span>85%</span>
+            </div>
+            <div className="w-full h-2 bg-background-tertiary rounded-full overflow-hidden">
+              <motion.div
+                className={`h-full ${accentColor.replace("bg-", "bg-").replace("/10", "/80")}`}
+                initial={{ width: "0%" }}
+                animate={{ width: "85%" }}
+                transition={{ duration: 1, delay: 0.5 }}
+              />
+            </div>
+          </div>
+        </div>
+      </CollapsibleSection>
     </motion.div>
   )
 }

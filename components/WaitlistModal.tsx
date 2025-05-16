@@ -5,6 +5,8 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { X } from "lucide-react"
 import { createClientSupabaseClient } from "@/lib/supabase"
+// Add the import for analytics at the top of the file
+import { event, ANALYTICS_EVENTS } from "@/lib/analytics"
 
 interface WaitlistModalProps {
   isOpen: boolean
@@ -32,13 +34,10 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
       setEmailError("")
 
       // Track modal open event
-      if (typeof window !== "undefined" && "gtag" in window) {
-        // @ts-ignore - gtag is not typed
-        window.gtag("event", "waitlist_modal_open", {
-          event_category: "engagement",
-          event_label: "waitlist_modal",
-        })
-      }
+      event(ANALYTICS_EVENTS.WAITLIST_MODAL_OPEN, {
+        event_category: "engagement",
+        event_label: "waitlist_modal",
+      })
     }
   }, [isOpen])
 
@@ -49,13 +48,10 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
         onClose()
 
         // Track modal close via escape key
-        if (typeof window !== "undefined" && "gtag" in window) {
-          // @ts-ignore - gtag is not typed
-          window.gtag("event", "waitlist_modal_close", {
-            event_category: "engagement",
-            event_label: "escape_key",
-          })
-        }
+        event(ANALYTICS_EVENTS.WAITLIST_MODAL_CLOSE, {
+          event_category: "engagement",
+          event_label: "escape_key",
+        })
       }
     }
 
@@ -234,22 +230,14 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
   // Google Analytics tracking
   const trackWaitlistSignup = (email: string) => {
     try {
-      // Check if gtag is available
-      if (typeof window !== "undefined" && "gtag" in window) {
-        // @ts-ignore - gtag is not typed
-        window.gtag("event", "join_waitlist_success", {
-          event_category: "conversion",
-          event_label: "waitlist_signup",
-          method: "email",
-          email_domain: email.split("@")[1],
-          referral_source: getReferralSource(),
-        })
-
-        // TODO: GOOGLE ANALYTICS EVENT - Waitlist Signup Success
-        // dataLayer.push({'event': 'join_waitlist_success', 'form_location': 'modal'});
-        // gtag('event', 'conversion', {'send_to': 'AW-YOUR_AW_ID/YOUR_CONVERSION_LABEL'}); // Example Google Ads Conversion
-        // Track other analytics events here (e.g., Meta Pixel)
-      }
+      // Track waitlist signup event
+      event(ANALYTICS_EVENTS.WAITLIST_SIGNUP, {
+        event_category: "conversion",
+        event_label: "waitlist_signup",
+        method: "email",
+        email_domain: email.split("@")[1],
+        referral_source: getReferralSource(),
+      })
 
       console.log("Tracking waitlist signup for:", email)
     } catch (error) {
@@ -260,13 +248,10 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
 
   const handleModalClose = () => {
     // Track modal close via button
-    if (typeof window !== "undefined" && "gtag" in window) {
-      // @ts-ignore - gtag is not typed
-      window.gtag("event", "waitlist_modal_close", {
-        event_category: "engagement",
-        event_label: "close_button",
-      })
-    }
+    event(ANALYTICS_EVENTS.WAITLIST_MODAL_CLOSE, {
+      event_category: "engagement",
+      event_label: "close_button",
+    })
 
     onClose()
   }

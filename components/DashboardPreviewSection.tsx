@@ -1,9 +1,9 @@
 "use client"
 
 import { useRef } from "react"
-import { LineChart, TrendingUp, Filter, Search, Clock, Wallet, ArrowRight } from "lucide-react"
+import { LineChart, TrendingUp, Filter, Search, Clock, Wallet } from "lucide-react"
 import { motion, useInView } from "framer-motion"
-import Link from "next/link"
+import CollapsibleSection from "@/components/CollapsibleSection"
 
 export default function DashboardPreviewSection() {
   const sectionRef = useRef(null)
@@ -73,15 +73,21 @@ export default function DashboardPreviewSection() {
             Dashboard Preview
           </div>
 
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-text-primary">
-            Discover Top Traders & Hot Meme Coins: Your <span className="text-gradient">Rust Rocket</span> Dashboard
-          </h2>
-
-          <p className="text-text-secondary text-lg">
-            This page shows a <span className="text-primary font-semibold">demo with sample data</span> of how Rust
-            Rocket will help you identify the most profitable wallets on Solana. Filter, analyze, and choose who to
-            copy.
-          </p>
+          <CollapsibleSection
+            title={
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-text-primary">
+                Discover Top Traders & Hot Meme Coins: Your <span className="text-gradient">Rust Rocket</span> Dashboard
+              </h2>
+            }
+            titleClassName="hover:opacity-90 transition-opacity duration-300"
+            defaultOpen={false}
+          >
+            <p className="text-text-secondary text-lg">
+              This page shows a <span className="text-primary font-semibold">demo with sample data</span> of how Rust
+              Rocket will help you identify the most profitable wallets on Solana. Filter, analyze, and choose who to
+              copy.
+            </p>
+          </CollapsibleSection>
         </motion.div>
 
         {/* Dashboard Mockup */}
@@ -366,22 +372,6 @@ export default function DashboardPreviewSection() {
             </div>
           </motion.div>
         </div>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-12 text-center"
-        >
-          <Link
-            href="#waitlist"
-            className="inline-flex items-center gap-2 text-primary hover:text-primary-hover transition-colors group"
-          >
-            <span>Get early access to the full dashboard</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-          </Link>
-        </motion.div>
       </div>
     </section>
   )

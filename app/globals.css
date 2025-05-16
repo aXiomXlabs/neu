@@ -273,3 +273,56 @@ body {
 .collapsible-indicator {
   animation: pulse-subtle 2s ease-in-out infinite;
 }
+
+/* Verbesserte Barrierefreiheit */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Verbesserte Fokus-Stile */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Größere Touch-Ziele für mobile Geräte */
+@media (max-width: 768px) {
+  button,
+  [role="button"],
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* Verbesserte Kontraste für Text */
+.text-text-secondary {
+  color: rgba(180, 183, 197, 1); /* Erhöhter Kontrast */
+}
+
+/* Skip-Link für Tastaturnavigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary);
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 0;
+}

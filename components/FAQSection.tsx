@@ -4,6 +4,7 @@ import { useState, useRef } from "react"
 import { motion, useInView, AnimatePresence } from "framer-motion"
 import { ChevronDown } from "lucide-react"
 import CollapsibleSection from "./CollapsibleSection"
+import { event, ANALYTICS_EVENTS } from "@/lib/analytics"
 
 interface FAQItem {
   question: string
@@ -55,13 +56,10 @@ export default function FAQSection() {
 
   const toggleFAQ = (index: number) => {
     // Track FAQ interaction
-    if (typeof window !== "undefined" && "gtag" in window) {
-      // @ts-ignore - gtag is not typed
-      window.gtag("event", "faq_interaction", {
-        event_category: "engagement",
-        event_label: `faq_${index + 1}_${activeIndex === index ? "close" : "open"}`,
-      })
-    }
+    event(ANALYTICS_EVENTS.FAQ_INTERACTION, {
+      event_category: "engagement",
+      event_label: `faq_${index + 1}_${activeIndex === index ? "close" : "open"}`,
+    })
 
     setActiveIndex(activeIndex === index ? null : index)
   }

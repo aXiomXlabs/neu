@@ -5,6 +5,11 @@ import { Inter } from "next/font/google"
 import ChatBubble from "@/components/ChatBubble"
 import { WaitlistModalProvider } from "@/components/WaitlistModalProvider"
 import Script from "next/script"
+// Add the import for AnalyticsProvider near the top of the file
+import AnalyticsProvider from "@/components/AnalyticsProvider"
+import { Suspense } from "react"
+import { CookieConsentProvider } from "@/lib/cookieConsent"
+import CookieConsent from "@/components/CookieConsent"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -101,6 +106,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // Find the return statement and wrap the content with AnalyticsProvider
   return (
     <html lang="en" className={inter.variable} itemScope itemType="http://schema.org/WebPage">
       <head>
@@ -110,22 +116,48 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
-        <WaitlistModalProvider>
-          {children}
-          <ChatBubble />
-        </WaitlistModalProvider>
+        <CookieConsentProvider>
+          <AnalyticsProvider>
+            <WaitlistModalProvider>
+              <Suspense>{children}</Suspense>
+              <ChatBubble />
+              <CookieConsent />
+            </WaitlistModalProvider>
+          </AnalyticsProvider>
+        </CookieConsentProvider>
 
-        {/* Google Tag Manager - Replace with your actual GTM ID */}
+        {/* Google Analytics 4 - Only loads if consent is given */}
         <Script
-          id="gtm-script"
+          id="ga4-check-consent"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
-              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-              })(window,document,'script','dataLayer','GTM-XXXXXXX');
+              // Check if user has given consent for analytics cookies
+              function hasAnalyticsConsent() {
+                try {
+                  const consents = localStorage.getItem('cookieConsents');
+                  return consents ? JSON.parse(consents).analytics === true : false;
+                } catch (e) {
+                  return false;
+                }
+              }
+
+              // Only load GA if consent is given
+              if (hasAnalyticsConsent()) {
+                // Load GA script
+                const gaScript = document.createElement('script');
+                gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-6GRKXCYXWW";
+                gaScript.async = true;
+                document.head.appendChild(gaScript);
+
+                // Initialize GA
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-6GRKXCYXWW', {
+                  page_path: window.location.pathname,
+                });
+              }
             `,
           }}
         />

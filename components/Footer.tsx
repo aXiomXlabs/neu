@@ -4,6 +4,7 @@ import type React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
+import CookieSettings from "./CookieSettings"
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -70,7 +71,7 @@ export default function Footer() {
             <div className="flex flex-wrap justify-center lg:justify-end gap-5">
               {/* Telegram */}
               <SocialLink
-                href="https://t.me/rustrocket"
+                href="https://t.me/Rust_Rocket"
                 label="Telegram Channel"
                 id="footer-telegram-link"
                 trackingId="footer_telegram_click"
@@ -112,7 +113,7 @@ export default function Footer() {
 
               {/* GitHub */}
               <SocialLink
-                href="https://github.com/rustrocket"
+                href="#"
                 label="GitHub Repository"
                 id="footer-github-link"
                 trackingId="footer_github_click"
@@ -130,7 +131,7 @@ export default function Footer() {
 
               {/* YouTube */}
               <SocialLink
-                href="https://www.youtube.com/c/rustrocket"
+                href="#"
                 label="YouTube Channel"
                 id="footer-youtube-link"
                 trackingId="footer_youtube_click"
@@ -144,7 +145,7 @@ export default function Footer() {
 
               {/* LinkedIn */}
               <SocialLink
-                href="https://www.linkedin.com/company/rustrocket"
+                href="#"
                 label="LinkedIn Page"
                 id="footer-linkedin-link"
                 trackingId="footer_linkedin_click"
@@ -159,6 +160,10 @@ export default function Footer() {
           </motion.div>
         </div>
 
+        <div className="mt-4 flex justify-center">
+          <CookieSettings />
+        </div>
+
         {/* Structured data for organization */}
         <script
           type="application/ld+json"
@@ -169,14 +174,7 @@ export default function Footer() {
               name: "Rust Rocket",
               url: "https://www.rust-rocket.com",
               logo: "https://www.rust-rocket.com/images/rust-rocket-logo.png",
-              sameAs: [
-                "https://x.com/rustrocket",
-                "https://t.me/rustrocket",
-                "https://discord.gg/rustrocket",
-                "https://github.com/rustrocket",
-                "https://www.youtube.com/c/rustrocket",
-                "https://www.linkedin.com/company/rustrocket",
-              ],
+              sameAs: ["https://x.com/rustrocket", "https://t.me/Rust_Rocket", "https://discord.gg/rustrocket"],
             }),
           }}
         />

@@ -42,11 +42,19 @@ export default function CollapsibleSection({
 
   return (
     <div className="collapsible-section">
-      <button
+      <div
         className={`w-full text-left flex items-center justify-between py-4 cursor-pointer group ${titleClassName}`}
         onClick={toggleOpen}
+        role="button"
+        tabIndex={0}
         aria-expanded={isOpen}
         aria-controls={`content-${uniqueId}`}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault()
+            toggleOpen()
+          }
+        }}
       >
         {iconPosition === "left" && (
           <motion.div
@@ -69,7 +77,7 @@ export default function CollapsibleSection({
             <ChevronDown className="h-5 w-5" />
           </motion.div>
         )}
-      </button>
+      </div>
 
       <AnimatePresence initial={false}>
         {isOpen && (
